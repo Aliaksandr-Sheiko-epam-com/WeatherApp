@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Weather App</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="button_send">Send</string>
+    <string name="title_activity_connection_absent">Connection_absent</string>
+    <string name="connection_absent">Absent connection!</string>
+    <string name="title_activity_location_weather">LocationWeatherActivity</string>
+    <string name="location_text_hint">Enter Location</string>
+    
+
+</resources>
