@@ -1,13 +1,8 @@
 package com.epam.weatherapp.service;
 
-import java.util.concurrent.TimeUnit;
-
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
-import android.util.Log;
-
-import com.epam.weatherapp.exception.TechnicException;
 
 public final class CheckWeatherService extends Service {
 	private Thread checkWeatherThread;
@@ -38,24 +33,19 @@ public final class CheckWeatherService extends Service {
 
 		@Override
 		public void run() {
-			try {
-				while (Thread.interrupted()) {
-					sleep(periodicity);
-
-				}
-			} catch (TechnicException e) {
-
-			}
+            /*
+             * try { while (Thread.interrupted()) { sleep(periodicity); } } catch (WeatherParseException e) { }
+             */
 		}
 
-		private void sleep(int seconds) throws TechnicException {
+		/*private void sleep(int seconds) throws WeatherParseException {
 			try {
 				TimeUnit.SECONDS.sleep(periodicity);
 			} catch (InterruptedException e) {
 				Log.e("MyLog", "Thread was interrupted");
-				throw new TechnicException(
+				throw new WeatherParseException(
 						"Thread was sleeping when it was interrupted", e);
 			}
-		}
+		}*/
 	}
 }

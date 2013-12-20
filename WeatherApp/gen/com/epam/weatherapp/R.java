@@ -25,7 +25,7 @@ public final class R {
     }
     public static final class id {
         public static final int auto_text_location=0x7f070001;
-        public static final int weather_dispalyer=0x7f070000;
+        public static final int webview=0x7f070000;
     }
     public static final class layout {
         public static final int activity_location_weather=0x7f030000;

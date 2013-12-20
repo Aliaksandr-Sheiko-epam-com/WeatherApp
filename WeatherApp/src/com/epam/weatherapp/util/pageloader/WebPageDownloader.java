@@ -9,88 +9,82 @@ import java.net.URL;
 
 import android.util.Log;
 
-import com.epam.weatherapp.exception.TechnicException;
-import com.epam.weatherapp.util.Constant;
+import com.epam.weatherapp.exception.CreateConnectionException;
+import com.epam.weatherapp.exception.ReadWebPageException;
 
-public class WebPageDownloader implements IPageDownloader{
-	private static final String REQUEST_METHOD = "GET";
-	private static final String CHARACTER_ENCODING = "UTF-8";
-	private static final int BUFFER_SIZE = 500;
-	private static final int CONNECT_TIMEOUT = 15000;
-	private static final int READ_TIMEOUT = 10000;
+public class WebPageDownloader implements IPageDownloader {
+    private static final String EXCEPTION_TAG = "WebPageDownloader";
+    private static final String REQUEST_METHOD = "GET";
+    private static final String CHARACTER_ENCODING = "UTF-8";
+    private static final int BUFFER_SIZE = 500;
+    private static final int CONNECT_TIMEOUT = 15000;
+    private static final int READ_TIMEOUT = 10000;
 
-	@Override
-	public String downloadUrl(String url) throws TechnicException {
-		HttpURLConnection connection = createConnection(url);
-		String contentAsString = readURLResponse(connection);
-		return contentAsString;
-	}
+    @Override
+    public String downloadUrl(String url) throws ReadWebPageException {
+        HttpURLConnection connection = establishConnection(url);
+        String contentAsString = readURLResponse(connection);
+        return contentAsString;
+    }
 
-	private HttpURLConnection createConnection(String stringURL)
-			throws TechnicException {
-		try {
-			URL url = new URL(stringURL);
-			HttpURLConnection connection = (HttpURLConnection) url
-					.openConnection();
-			connection.setReadTimeout(READ_TIMEOUT);
-			connection.setConnectTimeout(CONNECT_TIMEOUT);
-			connection.setRequestMethod(REQUEST_METHOD);
-			connection.setDoInput(true);
-			connection.connect();
-			return connection;
-		} catch (IOException e) {
-			Log.e(Constant.EXCEPTION_TAG,
-					"Some problem occured when connection was tried to establish.");
-			throw new TechnicException("Try to establish connection", e);
-		}
-	}
+    private HttpURLConnection establishConnection(String stringURL) throws CreateConnectionException {
+        try {
+            URL url = new URL(stringURL);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setReadTimeout(READ_TIMEOUT);
+            connection.setConnectTimeout(CONNECT_TIMEOUT);
+            connection.setRequestMethod(REQUEST_METHOD);
+            connection.setDoInput(true);
+            connection.connect();
+            return connection;
+        }
+        catch (IOException e) {
+            Log.e(EXCEPTION_TAG, "Some problem occured when connection was tried to establish.", e);
+            throw new CreateConnectionException("Some problem occured when connection was tried to establish.", e);
+        }
+    }
 
-	private String readURLResponse(HttpURLConnection connection)
-			throws TechnicException {
-		Reader reader = null;
-		TechnicException exception = null;
-		try {
-			reader = new InputStreamReader(connection.getInputStream(),
-					CHARACTER_ENCODING);
-			return readtreamAsString(reader);
-		} catch (UnsupportedEncodingException e) {
-			Log.e(Constant.EXCEPTION_TAG,
-					"Unsupported encoding was in resonse.");
-			exception = new TechnicException(
-					"Unsupported encoding was in resonse", e);
-			throw exception;
-		} catch (IOException e) {
-			Log.e(Constant.EXCEPTION_TAG,
-					"Input exception occured when response was been reading.");
-			exception = new TechnicException(
-					"Input exception occured when response was being read.", e);
-			throw exception;
-		} finally {
-			if (reader != null) {
-				try {
-					reader.close();
-				} catch (IOException e) {
-					Log.e(Constant.EXCEPTION_TAG,
-							"Input exception occured when trying to stream was closed");
-					if (exception != null) {
-						e.initCause(exception);
-					}
-					throw new TechnicException(
-							"Input exception occured when trying to stream was closed",
-							e);
-				}
-			}
-		}
-	}
+    private String readURLResponse(HttpURLConnection connection) throws ReadWebPageException {
+        Reader reader = null;
+        ReadWebPageException exception = null;
+        try {
+            reader = new InputStreamReader(connection.getInputStream(), CHARACTER_ENCODING);
+            return readtreamAsString(reader);
+        }
+        catch (UnsupportedEncodingException e) {
+            Log.e(EXCEPTION_TAG, "Unsupported encoding was in resonse.", e);
+            exception = new ReadWebPageException("Unsupported encoding was in resonse", e);
+            throw exception;
+        }
+        catch (IOException e) {
+            Log.e(EXCEPTION_TAG, "Input exception occured when response was been reading.", e);
+            exception = new ReadWebPageException("Input exception occured when response was being read.", e);
+            throw exception;
+        }
+        finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                }
+                catch (IOException e) {
+                    Log.e(EXCEPTION_TAG, "Input exception occured when trying to stream was closed", e);
+                    if (exception != null) {
+                        e.initCause(exception);
+                    }
+                    throw new ReadWebPageException("Input exception occured when trying to stream was closed", e);
+                }
+            }
+        }
+    }
 
-	private String readtreamAsString(Reader reader) throws IOException {
-		char[] buffer = new char[BUFFER_SIZE];
-		StringBuilder content = new StringBuilder();
-		int count;
-		while ((count = reader.read(buffer)) != -1) {
-			content.append(buffer, 0, count);
-		}
-		return content.toString();
-	}
+    private String readtreamAsString(Reader reader) throws IOException {
+        char[] buffer = new char[BUFFER_SIZE];
+        StringBuilder content = new StringBuilder();
+        int count;
+        while ((count = reader.read(buffer)) != -1) {
+            content.append(buffer, 0, count);
+        }
+        return content.toString();
+    }
 
 }

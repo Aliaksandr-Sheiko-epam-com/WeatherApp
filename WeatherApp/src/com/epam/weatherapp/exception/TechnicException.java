@@ -1,8 +1,8 @@
 package com.epam.weatherapp.exception;
 
 public class TechnicException extends Exception {
-
-	private static final long serialVersionUID = 958974587777144017L;
+	
+	private static final long serialVersionUID = -7537568409607892642L;
 
 	public TechnicException(String detailMessage, Throwable cause) {
 		super(detailMessage, cause);
@@ -15,6 +15,4 @@ public class TechnicException extends Exception {
 	public TechnicException(Throwable cause) {
 		super(cause);
 	}
-	
-	
 }
