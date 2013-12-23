@@ -3,17 +3,15 @@ package com.epam.weatherapp.util.pageloader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
 import android.util.Log;
 
-import com.epam.weatherapp.exception.CreateConnectionException;
 import com.epam.weatherapp.exception.ReadWebPageException;
 
 public class WebPageDownloader implements IPageDownloader {
-    private static final String EXCEPTION_TAG = "WebPageDownloader";
+    private static final String TAG_LOG = WebPageDownloader.class.getName();
     private static final String REQUEST_METHOD = "GET";
     private static final String CHARACTER_ENCODING = "UTF-8";
     private static final int BUFFER_SIZE = 500;
@@ -22,13 +20,12 @@ public class WebPageDownloader implements IPageDownloader {
 
     @Override
     public String downloadUrl(String url) throws ReadWebPageException {
-        //fixme
         HttpURLConnection connection = establishConnection(url);
         String contentAsString = readURLResponse(connection);
         return contentAsString;
     }
 
-    private HttpURLConnection establishConnection(String stringURL) throws CreateConnectionException {
+    private HttpURLConnection establishConnection(String stringURL) throws ReadWebPageException {
         try {
             URL url = new URL(stringURL);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -40,8 +37,8 @@ public class WebPageDownloader implements IPageDownloader {
             return connection;
         }
         catch (IOException e) {
-            Log.e(EXCEPTION_TAG, "Some problem occured when connection was tried to establish.", e);
-            throw new CreateConnectionException("Some problem occured when connection was tried to establish.", e);
+            Log.e(TAG_LOG, "Some problem occured when connection was tried to establish.", e);
+            throw new ReadWebPageException("Some problem occured when connection was tried to establish.", e);
         }
     }
 
@@ -52,13 +49,8 @@ public class WebPageDownloader implements IPageDownloader {
             reader = new InputStreamReader(connection.getInputStream(), CHARACTER_ENCODING);
             return readtreamAsString(reader);
         }
-        catch (UnsupportedEncodingException e) {
-            Log.e(EXCEPTION_TAG, "Unsupported encoding was in resonse.", e);
-            exception = new ReadWebPageException("Unsupported encoding was in resonse", e);
-            throw exception;
-        }
         catch (IOException e) {
-            Log.e(EXCEPTION_TAG, "Input exception occured when response was been reading.", e);
+            Log.e(TAG_LOG, "Input exception occured when response was been reading.", e);
             exception = new ReadWebPageException("Input exception occured when response was being read.", e);
             throw exception;
         }
@@ -67,13 +59,7 @@ public class WebPageDownloader implements IPageDownloader {
                 try {
                     reader.close();
                 }
-                catch (IOException e) {
-                    Log.e(EXCEPTION_TAG, "Input exception occured when trying to stream was closed", e);
-                    if (exception != null) {
-                        e.initCause(exception);
-                    }
-                    throw new ReadWebPageException("Input exception occured when trying to stream was closed", e);
-                }
+                catch (IOException e) {}
             }
         }
     }

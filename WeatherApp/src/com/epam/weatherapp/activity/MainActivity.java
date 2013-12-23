@@ -1,5 +1,6 @@
 package com.epam.weatherapp.activity;
 
+import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -24,17 +25,14 @@ import android.widget.Toast;
 
 import com.epam.weatherapp.R;
 import com.epam.weatherapp.model.LocationInfo;
-import com.epam.weatherapp.util.WeatherAdapter;
 import com.epam.weatherapp.util.pageloader.AvailableLocationDisplayTask;
 import com.epam.weatherapp.util.pageloader.WebPageLoadTask;
 
 public final class MainActivity extends Activity {
-    //fixme
-    public final static String COUNTRY_KEY = "com.epam.weatherapp.activity.COUNTRY_KEY";
     private final static String URL_ADDRESS = "http://apidev.accuweather.com/locations/v1/cities/autocomplete?apikey=hAilspiKe&language=en&q=";
     private WebPageLoadTask dataLoader;
-    private boolean isInternetAvailible;
-    private AutoCompleteTextView textView;
+    private AutoCompleteTextView autoCompleteTextView;
+    private ArrayAdapter<LocationInfo> adapter;
     private NetworkReceiver receiver;
     private ExecutorService pool;
 
@@ -42,7 +40,7 @@ public final class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        textView = (AutoCompleteTextView) findViewById(R.id.auto_text_location);
+        autoCompleteTextView = (AutoCompleteTextView) findViewById(R.id.auto_text_location);
         pool = Executors.newFixedThreadPool(1);
         checkConnection();
         tuneLocationView();
@@ -52,15 +50,14 @@ public final class MainActivity extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (receiver != null) {
-            this.unregisterReceiver(receiver);
-        }
+        this.unregisterReceiver(receiver);
     }
 
     private void tuneLocationView() {
-        addTextViewEmptyAdapter();
-        textView.addTextChangedListener(new TextChangeWatcher());
-        textView.setOnItemClickListener(new LocationSelectListener());
+        adapter = new ArrayAdapter<LocationInfo>(this, android.R.layout.simple_list_item_1, new ArrayList<LocationInfo>());
+        autoCompleteTextView.setAdapter(adapter);
+        autoCompleteTextView.addTextChangedListener(new TextChangeWatcher());
+        autoCompleteTextView.setOnItemClickListener(new LocationSelectListener());
     }
 
     private void createNetworkReceiver() {
@@ -69,39 +66,17 @@ public final class MainActivity extends Activity {
         this.registerReceiver(receiver, filter);
     }
 
-    private void addTextViewEmptyAdapter() { // need for start work dropdown list at once
-        //fixme
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, new String[] {});
-        textView.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
-    }
-
     private boolean checkConnection() {
-        //fixme
         ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-
-        //fixme
-        if (networkInfo != null && networkInfo.isConnected()) {
-            return isInternetAvailible = true;
-        }
-        else {
-            return isInternetAvailible = false;
-        }
+        return networkInfo != null && networkInfo.isConnected();
     }
 
     private class NetworkReceiver extends BroadcastReceiver {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            //fixme
-            String message;
-            if (checkConnection()) {
-                message = "Internet availible";
-            }
-            else {
-                message = "Internet not availible";
-            }
+            String message = checkConnection() ? "Internet availible" : "Internet not availible";
             showMessage(context, message);
         }
 
@@ -114,11 +89,11 @@ public final class MainActivity extends Activity {
 
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
-            String searchLocation = textView.getText().toString();
-            if (before != count && !TextUtils.isEmpty(searchLocation)) { // this condition for prevent calling page loader twice
-                                                                         // when made only one change
+            String searchLocation = autoCompleteTextView.getText().toString();
+            // this condition for prevent calling page loader twice when made only one change
+            if (before != count && !TextUtils.isEmpty(searchLocation)) {
                 cancelDataLoader();
-                if (isInternetAvailible) {
+                if (checkConnection()) {
                     addDownloadTask(searchLocation);
                 }
                 else {
@@ -128,11 +103,11 @@ public final class MainActivity extends Activity {
         }
 
         @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {/* NOP */
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
         }
 
         @Override
-        public void afterTextChanged(Editable s) {/* NOP */
+        public void afterTextChanged(Editable s) {
         }
 
         private void cancelDataLoader() {
@@ -143,7 +118,7 @@ public final class MainActivity extends Activity {
 
         private void addDownloadTask(String searchLocation) {
             String uriLocation = Uri.encode(searchLocation);
-            dataLoader = new AvailableLocationDisplayTask(textView, MainActivity.this, URL_ADDRESS + uriLocation);
+            dataLoader = new AvailableLocationDisplayTask(autoCompleteTextView, MainActivity.this, URL_ADDRESS + uriLocation);
             pool.execute(dataLoader);
         }
 
@@ -156,16 +131,16 @@ public final class MainActivity extends Activity {
 
         @SuppressWarnings("unchecked")
         @Override
-        public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-            WeatherAdapter<String> myWeatherAdapter = (WeatherAdapter<String>) textView.getAdapter();
-            LocationInfo locationInfo = myWeatherAdapter.getLocationInfo(arg2);
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            ArrayAdapter<LocationInfo> myWeatherAdapter = (ArrayAdapter<LocationInfo>) autoCompleteTextView.getAdapter();
+            LocationInfo locationInfo = myWeatherAdapter.getItem(position);
             callWeatherActivity(locationInfo.getKey());
-            textView.setText(locationInfo.getCityName());
+            autoCompleteTextView.setText(locationInfo.getCityName());
         }
-
+        
         private void callWeatherActivity(String locationKey) {
             Intent intent = new Intent(MainActivity.this, LocationWeatherActivity.class);
-            intent.putExtra(COUNTRY_KEY, locationKey);
+            intent.putExtra(LocationWeatherActivity.COUNTRY_KEY, locationKey);
             startActivity(intent);
         }
 

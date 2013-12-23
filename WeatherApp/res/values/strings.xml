@@ -9,6 +9,6 @@
     <string name="connection_absent">Absent connection!</string>
     <string name="title_activity_location_weather">LocationWeatherActivity</string>
     <string name="location_text_hint">Enter Location</string>
-    
+    <string name="add_screen">Add screen</string>
 
 </resources>

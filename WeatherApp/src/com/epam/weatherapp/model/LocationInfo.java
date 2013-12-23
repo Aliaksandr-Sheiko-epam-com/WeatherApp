@@ -1,7 +1,6 @@
 package com.epam.weatherapp.model;
 
-//fixme
-public final class LocationInfo {
+public class LocationInfo {
     private final String cityName;
     private final String countryName;
     private final String administativeAreaName;
@@ -29,4 +28,10 @@ public final class LocationInfo {
     public String getKey() {
         return key;
     }
+
+    @Override
+    public String toString() {
+        return cityName + " : " + countryName + " : " + administativeAreaName;
+    }
+
 }

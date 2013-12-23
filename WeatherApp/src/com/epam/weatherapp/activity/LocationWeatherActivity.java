@@ -9,17 +9,19 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
 import com.epam.weatherapp.R;
 import com.epam.weatherapp.util.pageloader.DisplayLocationWeatherTask;
 
 public class LocationWeatherActivity extends Activity {
-    //fixme
-    private static final String locationUrlStart = "http://apidev.accuweather.com/currentconditions/v1/";
-    private static final String locationUrlEnd = ".json?language=en&apikey=hAilspiKe";
+    public final static String COUNTRY_KEY = "com.epam.weatherapp.activity.COUNTRY_KEY";
+    private static final String LOCATION_URL = "http://apidev.accuweather.com/currentconditions/v1/%s.json?language=en&apikey=hAilspiKe";
     private ExecutorService pool;
     private WebView webView;
 
@@ -33,9 +35,27 @@ public class LocationWeatherActivity extends Activity {
         }
         pool = Executors.newFixedThreadPool(1);
         tuneWebView();
-        String url = locationUrlStart + getCountryKey() + locationUrlEnd;
+        String url = String.format(LOCATION_URL, getCountryKey());
         pool.execute(new DisplayLocationWeatherTask(LocationWeatherActivity.this, webView, url));
+        webView.setWebViewClient(new WebViewClient(){
+
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url){
+              view.loadUrl(url);
+              return true;
+            }
+        });
     }
+    
+    
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.location_weather_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -56,6 +76,6 @@ public class LocationWeatherActivity extends Activity {
 
     private String getCountryKey() {
         Intent intent = getIntent();
-        return intent.getStringExtra(MainActivity.COUNTRY_KEY);
+        return intent.getStringExtra(COUNTRY_KEY);
     }
 }

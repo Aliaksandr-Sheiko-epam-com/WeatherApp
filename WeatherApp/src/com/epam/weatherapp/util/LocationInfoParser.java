@@ -12,14 +12,14 @@ import com.epam.weatherapp.exception.WeatherParseException;
 import com.epam.weatherapp.model.LocationInfo;
 
 public final class LocationInfoParser {
-    private final static String EXCEPTION_TAG = "AccuweatherInfoParser";
+    private final static String TAG_LOG = LocationInfoParser.class.getName();
     private final static String COUNTRY_KEY = "Country";
     private final static String ADMINISTRATIVE_AREA_KEY = "AdministrativeArea";
     private final static String LOCALIZED_NAME_KEY = "LocalizedName";
     private final static String CITY_KEY = "Key";
     private final static String MOBILE_LINK_KEY = "MobileLink";
 
-    private LocationInfoParser() {/* NOP */
+    private LocationInfoParser() {
     }
 
     public static ArrayList<LocationInfo> getLocationList(String jsonString) throws WeatherParseException {
@@ -52,7 +52,7 @@ public final class LocationInfoParser {
             return weatherInfo.getString(MOBILE_LINK_KEY);
         }
         catch (JSONException e) {
-            Log.e(EXCEPTION_TAG, "Retrieve MobileLink error occured", e);
+            Log.e(TAG_LOG, "Retrieve MobileLink error occured", e);
             throw new WeatherParseException("Retrieve MobileLink error occured", e);
         }
     }
@@ -62,7 +62,7 @@ public final class LocationInfoParser {
             return new JSONArray(jsonString);
         }
         catch (JSONException e) {
-            Log.e(EXCEPTION_TAG, "Parse array result array error occured", e);
+            Log.e(TAG_LOG, "Parse array result array error occured", e);
             throw new WeatherParseException("Parse array result array error occured", e);
         }
     }
@@ -72,7 +72,7 @@ public final class LocationInfoParser {
             return jsonArr.getJSONObject(number);
         }
         catch (JSONException e) {
-            Log.e(EXCEPTION_TAG, "Retrieve weather info object error occured", e);
+            Log.e(TAG_LOG, "Retrieve weather info object error occured", e);
             throw new WeatherParseException("Retrieve weather info object error occured", e);
         }
     }
@@ -82,7 +82,7 @@ public final class LocationInfoParser {
             return locationInfo.getString(CITY_KEY);
         }
         catch (JSONException e) {
-            Log.e(EXCEPTION_TAG, "Retrieve city key error occured", e);
+            Log.e(TAG_LOG, "Retrieve city key error occured", e);
             throw new WeatherParseException("Retrieve city key error occured", e);
         }
     }
@@ -92,7 +92,7 @@ public final class LocationInfoParser {
             return locationInfo.getString(LOCALIZED_NAME_KEY);
         }
         catch (JSONException e) {
-            Log.e(EXCEPTION_TAG, "Retrieve city name error occured", e);
+            Log.e(TAG_LOG, "Retrieve city name error occured", e);
             throw new WeatherParseException("Retrieve city name error occured", e);
         }
     }
@@ -103,7 +103,7 @@ public final class LocationInfoParser {
             return country.getString(LOCALIZED_NAME_KEY);
         }
         catch (JSONException e) {
-            Log.e(EXCEPTION_TAG, "Retrieve country name error occured", e);
+            Log.e(TAG_LOG, "Retrieve country name error occured", e);
             throw new WeatherParseException("Retrieve country name error occured", e);
         }
     }
@@ -114,7 +114,7 @@ public final class LocationInfoParser {
             return administativeArea.getString(LOCALIZED_NAME_KEY);
         }
         catch (JSONException e) {
-            Log.e(EXCEPTION_TAG, "Retrieve administative area name error occured", e);
+            Log.e(TAG_LOG, "Retrieve administative area name error occured", e);
             throw new WeatherParseException("Retrieve administative area name error occured", e);
         }
     }

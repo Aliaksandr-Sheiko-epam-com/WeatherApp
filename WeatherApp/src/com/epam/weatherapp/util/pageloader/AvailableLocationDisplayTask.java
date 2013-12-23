@@ -1,10 +1,8 @@
 package com.epam.weatherapp.util.pageloader;
 
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
-import android.app.Activity;
+import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
@@ -16,83 +14,56 @@ import com.epam.weatherapp.exception.ReadWebPageException;
 import com.epam.weatherapp.exception.WeatherParseException;
 import com.epam.weatherapp.model.LocationInfo;
 import com.epam.weatherapp.util.LocationInfoParser;
-import com.epam.weatherapp.util.WeatherAdapter;
 
 public final class AvailableLocationDisplayTask extends WebPageLoadTask {
-    private final static String EXCEPTION_TAG = "AvailableLocationDisplay";
-    private AutoCompleteTextView textView;
-    private Activity activity;
+    private final static String TAG_LOG = AvailableLocationDisplayTask.class.getName();
+    private AutoCompleteTextView autoCompleteTextView;
+    private Context context;
 
-    public AvailableLocationDisplayTask(AutoCompleteTextView textView, Activity activity, String url) {
+    public AvailableLocationDisplayTask(AutoCompleteTextView textView, Context context, String url) {
         super(url);
-        this.textView = textView;
-        this.activity = activity;
+        this.autoCompleteTextView = textView;
+        this.context = context;
     }
 
-    public AvailableLocationDisplayTask(AutoCompleteTextView textView, Activity activity, String url,
-        IPageDownloader pageDownloader) {
+    public AvailableLocationDisplayTask(AutoCompleteTextView textView, Context context, String url, IPageDownloader pageDownloader) {
         super(url, pageDownloader);
-        this.textView = textView;
-        this.activity = activity;
+        this.autoCompleteTextView = textView;
+        this.context = context;
     }
 
     @Override
     protected void onSuccessPostExecute(final String result) {
         try {
             final ArrayList<LocationInfo> locationList = LocationInfoParser.getLocationList(result);
-
-            activity.runOnUiThread(new Runnable() {
+            Handler handler = new Handler(Looper.getMainLooper());
+            handler.post(new Runnable() {
 
                 @Override
                 public void run() {
-
-                    //fixme
-                    ArrayAdapter<String> adapter;
-                    if (locationList.size() == 0) {
-                        adapter = new WeatherAdapter<String>(activity, android.R.layout.simple_list_item_1, new String[] {},
-                            locationList);
-                    }
-                    else {
-                        adapter = new WeatherAdapter<String>(activity, android.R.layout.simple_list_item_1,
-                            createLocationArray(locationList), locationList);
-                    }
-                    textView.setAdapter(adapter);
+                    ArrayAdapter<LocationInfo> adapter = new ArrayAdapter<LocationInfo>(context,
+                        android.R.layout.simple_list_item_1, locationList);
+                    autoCompleteTextView.setAdapter(adapter);
                     adapter.notifyDataSetChanged();
                 }
             });
         }
         catch (WeatherParseException e) {
-            Toast.makeText(activity, "Bad data were received", Toast.LENGTH_SHORT).show();
-            Log.e(EXCEPTION_TAG, "Bad data were received", e);
+            Toast.makeText(context, "Bad data were received", Toast.LENGTH_SHORT).show();
+            Log.e(TAG_LOG, "Bad data were received", e);
         }
     }
 
     @Override
     protected void onFailPostExecute(ReadWebPageException readException) {
-        activity.runOnUiThread(new Runnable() {
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.post(new Runnable() {
 
             @Override
             public void run() {
-                Toast.makeText(activity, "Problem with data receiving occured", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Problem with data receiving occured", Toast.LENGTH_SHORT).show();
             }
         });
 
-    }
-
-    private String[] createLocationArray(List<LocationInfo> locationList) {
-        //fixme
-        Iterator<LocationInfo> locationIterator = locationList.iterator();
-        String[] locationNameArray = new String[locationList.size()];
-        LocationInfo location;
-        int i = 0;
-        while (locationIterator.hasNext()) {
-            location = locationIterator.next();
-            locationNameArray[i++] = resultItem(location);
-        }
-        return locationNameArray;
-    }
-
-    private String resultItem(LocationInfo location) {
-        return location.getCityName() + " : " + location.getAdministativeAreaName() + " : " + location.getCountryName();
     }
 }

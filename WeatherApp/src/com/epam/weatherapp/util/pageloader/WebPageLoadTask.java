@@ -1,11 +1,12 @@
 package com.epam.weatherapp.util.pageloader;
 
+import android.os.SystemClock;
 import android.util.Log;
 
 import com.epam.weatherapp.exception.ReadWebPageException;
 
 public abstract class WebPageLoadTask implements Runnable {
-    private static final String EXCEPTION_TAG = "WebPageLoadTask";
+    private static final String TAG_LOG = WebPageLoadTask.class.getName();
     private static final int TIME_BEFORE_START_DOWNLOAD = 500;
     private volatile boolean isCancelled = false;
     private IPageDownloader pageDownloader;
@@ -24,21 +25,9 @@ public abstract class WebPageLoadTask implements Runnable {
     @Override
     public void run() {
         if (!isCancelled) {
-            try {
-                Thread.sleep(TIME_BEFORE_START_DOWNLOAD);
-                if (!isCancelled) {
-                    try {
-                        String result = pageDownloader.downloadUrl(url);
-                        onSuccessPostExecute(result);
-                    }
-                    catch (ReadWebPageException e) {
-                        Log.e(EXCEPTION_TAG, "Unable to retrieve web page. URL may be invalid.", e);
-                        onFailPostExecute(e);
-                    }
-                }
-            }
-            catch (InterruptedException e) {
-                Log.e(EXCEPTION_TAG, "Thread-loader was interrupted", e);
+            sleep();
+            if (!isCancelled) {
+                performTask();
             }
         }
     }
@@ -50,4 +39,19 @@ public abstract class WebPageLoadTask implements Runnable {
     protected abstract void onSuccessPostExecute(String result);
 
     protected abstract void onFailPostExecute(ReadWebPageException readException);
+    
+    private void performTask() {
+        try {
+            String result = pageDownloader.downloadUrl(url);
+            onSuccessPostExecute(result);
+        }
+        catch (ReadWebPageException e) {
+            Log.e(TAG_LOG, "Unable to retrieve web page. URL may be invalid.", e);
+            onFailPostExecute(e);
+        }
+    }
+    
+    private void sleep() {
+        SystemClock.sleep(TIME_BEFORE_START_DOWNLOAD);
+    }
 }

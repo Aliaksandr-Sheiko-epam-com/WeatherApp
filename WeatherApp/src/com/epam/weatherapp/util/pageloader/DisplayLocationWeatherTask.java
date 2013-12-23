@@ -10,7 +10,7 @@ import com.epam.weatherapp.exception.WeatherParseException;
 import com.epam.weatherapp.util.LocationInfoParser;
 
 public final class DisplayLocationWeatherTask extends WebPageLoadTask {
-    private final static String EXCEPTION_TAG = "DisplayLocationWeatherTask";
+    private final static String TAG_LOG = DisplayLocationWeatherTask.class.getName();
     private Activity activity;
     private WebView webView;
 
@@ -34,7 +34,7 @@ public final class DisplayLocationWeatherTask extends WebPageLoadTask {
         }
         catch (WeatherParseException e) {
             Toast.makeText(activity, "Bad data were received", Toast.LENGTH_SHORT).show();
-            Log.e(EXCEPTION_TAG, "Bad data were received", e);
+            Log.e(TAG_LOG, "Bad data were received", e);
         }
 	}
 
