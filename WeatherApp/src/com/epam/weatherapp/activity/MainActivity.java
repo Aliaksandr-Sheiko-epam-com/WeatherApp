@@ -29,6 +29,7 @@ import com.epam.weatherapp.util.pageloader.AvailableLocationDisplayTask;
 import com.epam.weatherapp.util.pageloader.WebPageLoadTask;
 
 public final class MainActivity extends Activity {
+    //fixme
     public final static String COUNTRY_KEY = "com.epam.weatherapp.activity.COUNTRY_KEY";
     private final static String URL_ADDRESS = "http://apidev.accuweather.com/locations/v1/cities/autocomplete?apikey=hAilspiKe&language=en&q=";
     private WebPageLoadTask dataLoader;
@@ -69,14 +70,18 @@ public final class MainActivity extends Activity {
     }
 
     private void addTextViewEmptyAdapter() { // need for start work dropdown list at once
+        //fixme
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, new String[] {});
         textView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
     }
 
     private boolean checkConnection() {
+        //fixme
         ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+
+        //fixme
         if (networkInfo != null && networkInfo.isConnected()) {
             return isInternetAvailible = true;
         }
@@ -89,6 +94,7 @@ public final class MainActivity extends Activity {
 
         @Override
         public void onReceive(Context context, Intent intent) {
+            //fixme
             String message;
             if (checkConnection()) {
                 message = "Internet availible";

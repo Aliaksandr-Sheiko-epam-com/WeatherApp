@@ -1,5 +1,6 @@
 package com.epam.weatherapp.model;
 
+//fixme
 public final class LocationInfo {
     private final String cityName;
     private final String countryName;

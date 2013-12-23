@@ -5,6 +5,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import android.app.Activity;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -38,10 +40,13 @@ public final class AvailableLocationDisplayTask extends WebPageLoadTask {
     protected void onSuccessPostExecute(final String result) {
         try {
             final ArrayList<LocationInfo> locationList = LocationInfoParser.getLocationList(result);
+
             activity.runOnUiThread(new Runnable() {
 
                 @Override
                 public void run() {
+
+                    //fixme
                     ArrayAdapter<String> adapter;
                     if (locationList.size() == 0) {
                         adapter = new WeatherAdapter<String>(activity, android.R.layout.simple_list_item_1, new String[] {},
@@ -75,6 +80,7 @@ public final class AvailableLocationDisplayTask extends WebPageLoadTask {
     }
 
     private String[] createLocationArray(List<LocationInfo> locationList) {
+        //fixme
         Iterator<LocationInfo> locationIterator = locationList.iterator();
         String[] locationNameArray = new String[locationList.size()];
         LocationInfo location;

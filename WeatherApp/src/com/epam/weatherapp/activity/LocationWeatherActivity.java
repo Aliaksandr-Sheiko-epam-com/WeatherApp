@@ -17,6 +17,7 @@ import com.epam.weatherapp.R;
 import com.epam.weatherapp.util.pageloader.DisplayLocationWeatherTask;
 
 public class LocationWeatherActivity extends Activity {
+    //fixme
     private static final String locationUrlStart = "http://apidev.accuweather.com/currentconditions/v1/";
     private static final String locationUrlEnd = ".json?language=en&apikey=hAilspiKe";
     private ExecutorService pool;

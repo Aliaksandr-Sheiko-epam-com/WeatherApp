@@ -22,6 +22,7 @@ public class WebPageDownloader implements IPageDownloader {
 
     @Override
     public String downloadUrl(String url) throws ReadWebPageException {
+        //fixme
         HttpURLConnection connection = establishConnection(url);
         String contentAsString = readURLResponse(connection);
         return contentAsString;
