@@ -24,11 +24,12 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Toast;
 
 import com.epam.weatherapp.R;
+import com.epam.weatherapp.fragment.LocationWeatherFragment;
 import com.epam.weatherapp.model.LocationInfo;
-import com.epam.weatherapp.util.pageloader.AvailableLocationDisplayTask;
+import com.epam.weatherapp.util.dataviewer.DisplayAvailableLocationTask;
 import com.epam.weatherapp.util.pageloader.WebPageLoadTask;
 
-public final class MainActivity extends Activity {
+public class MainActivity extends Activity {
     private final static String URL_ADDRESS = "http://apidev.accuweather.com/locations/v1/cities/autocomplete?apikey=hAilspiKe&language=en&q=";
     private WebPageLoadTask dataLoader;
     private AutoCompleteTextView autoCompleteTextView;
@@ -42,7 +43,6 @@ public final class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
         autoCompleteTextView = (AutoCompleteTextView) findViewById(R.id.auto_text_location);
         pool = Executors.newFixedThreadPool(1);
-        checkConnection();
         tuneLocationView();
         createNetworkReceiver();
     }
@@ -77,10 +77,6 @@ public final class MainActivity extends Activity {
         @Override
         public void onReceive(Context context, Intent intent) {
             String message = checkConnection() ? "Internet availible" : "Internet not availible";
-            showMessage(context, message);
-        }
-
-        private void showMessage(Context context, String message) {
             Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
         }
     }
@@ -118,7 +114,7 @@ public final class MainActivity extends Activity {
 
         private void addDownloadTask(String searchLocation) {
             String uriLocation = Uri.encode(searchLocation);
-            dataLoader = new AvailableLocationDisplayTask(autoCompleteTextView, MainActivity.this, URL_ADDRESS + uriLocation);
+            dataLoader = new DisplayAvailableLocationTask(autoCompleteTextView, URL_ADDRESS + uriLocation);
             pool.execute(dataLoader);
         }
 
@@ -140,7 +136,7 @@ public final class MainActivity extends Activity {
         
         private void callWeatherActivity(String locationKey) {
             Intent intent = new Intent(MainActivity.this, LocationWeatherActivity.class);
-            intent.putExtra(LocationWeatherActivity.COUNTRY_KEY, locationKey);
+            intent.putExtra(LocationWeatherFragment.COUNTRY_KEY, locationKey);
             startActivity(intent);
         }
 

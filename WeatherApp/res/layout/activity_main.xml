@@ -4,7 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:paddingTop="10sp" >
+    android:paddingTop="10sp"
+    android:background="@color/white" 
+    android:id="@+id/main_activity_layout">
 
     <AutoCompleteTextView
         android:id="@+id/auto_text_location"
@@ -14,7 +16,8 @@
         android:dropDownWidth="wrap_content"
         android:hint="@string/location_text_hint"
         android:inputType="text|textNoSuggestions"
-        android:textSize="20sp" />
+        android:textSize="20sp" 
+        android:tag="auto_complete_text_view"/>
 
    <!--  <Spinner
         android:id="@+id/country_spinner"

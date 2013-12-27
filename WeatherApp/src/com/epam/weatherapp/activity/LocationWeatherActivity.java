@@ -1,61 +1,49 @@
 package com.epam.weatherapp.activity;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NavUtils;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 
 import com.epam.weatherapp.R;
-import com.epam.weatherapp.util.pageloader.DisplayLocationWeatherTask;
+import com.epam.weatherapp.fragment.LocationListFragment;
+import com.epam.weatherapp.fragment.LocationWeatherFragment;
 
-public class LocationWeatherActivity extends Activity {
-    public final static String COUNTRY_KEY = "com.epam.weatherapp.activity.COUNTRY_KEY";
-    private static final String LOCATION_URL = "http://apidev.accuweather.com/currentconditions/v1/%s.json?language=en&apikey=hAilspiKe";
-    private ExecutorService pool;
-    private WebView webView;
+public class LocationWeatherActivity extends FragmentActivity implements LocationListFragment.OnHeadlineSelectedListener {
+    private MenuItem screenListButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location_weather);
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             getActionBar().setDisplayHomeAsUpEnabled(true);
         }
-        pool = Executors.newFixedThreadPool(1);
-        tuneWebView();
-        String url = String.format(LOCATION_URL, getCountryKey());
-        pool.execute(new DisplayLocationWeatherTask(LocationWeatherActivity.this, webView, url));
-        webView.setWebViewClient(new WebViewClient(){
-
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, String url){
-              view.loadUrl(url);
-              return true;
-            }
-        });
+        LocationWeatherFragment locationWeather = new LocationWeatherFragment();
+        locationWeather.setArguments(getIntent().getExtras());
+        getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, locationWeather).commit();
     }
-    
-    
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK && !screenListButton.isVisible()) {
+            screenListButton.setVisible(true);
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.location_weather_menu, menu);
+        screenListButton = menu.findItem(R.id.action_add_screen);
         return super.onCreateOptionsMenu(menu);
     }
-
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -63,19 +51,32 @@ public class LocationWeatherActivity extends Activity {
             case android.R.id.home:
                 NavUtils.navigateUpFromSameTask(this);
                 return true;
+            case R.id.action_add_screen:
+                screenListButton.setVisible(false);
+                showLocationList();
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
-    
-    @SuppressLint("SetJavaScriptEnabled")
-    private void tuneWebView() {
-        webView = (WebView) findViewById(R.id.webview);
-        WebSettings webSettings = webView.getSettings();
-        webSettings.setJavaScriptEnabled(true);
+
+    private void showLocationList() {
+        LocationListFragment locationListFragment = new LocationListFragment();
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.fragment_container, locationListFragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
     }
 
-    private String getCountryKey() {
-        Intent intent = getIntent();
-        return intent.getStringExtra(COUNTRY_KEY);
+    @Override
+    public void onArticleSelected(int position) {
+        // TODO Auto-generated method stub
+
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        System.out.println("LocationWeatherActivity---onDestroy");
+    }
+
 }

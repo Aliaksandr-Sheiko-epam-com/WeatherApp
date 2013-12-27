@@ -6,12 +6,12 @@ import android.util.Log;
 import com.epam.weatherapp.exception.ReadWebPageException;
 
 public abstract class WebPageLoadTask implements Runnable {
+    protected IPageDownloader pageDownloader;
     private static final String TAG_LOG = WebPageLoadTask.class.getName();
     private static final int TIME_BEFORE_START_DOWNLOAD = 500;
     private volatile boolean isCancelled = false;
-    private IPageDownloader pageDownloader;
     private String url;
-
+    
     public WebPageLoadTask(String url) {
         this.url = url;
         pageDownloader = new WebPageDownloader();
@@ -46,7 +46,7 @@ public abstract class WebPageLoadTask implements Runnable {
             onSuccessPostExecute(result);
         }
         catch (ReadWebPageException e) {
-            Log.e(TAG_LOG, "Unable to retrieve web page. URL may be invalid.", e);
+            Log.e(TAG_LOG, "Unable to retrieve web page. URL may be invalid", e);
             onFailPostExecute(e);
         }
     }
