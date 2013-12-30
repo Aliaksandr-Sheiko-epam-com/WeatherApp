@@ -1,5 +1,10 @@
 package com.epam.weatherapp.activity;
 
+import com.epam.weatherapp.R;
+import com.epam.weatherapp.fragment.LocationListFragment;
+import com.epam.weatherapp.fragment.LocationWeatherFragment;
+import com.epam.weatherapp.model.LocationInfo;
+
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -15,11 +20,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
-import com.epam.weatherapp.R;
-import com.epam.weatherapp.fragment.LocationListFragment;
-import com.epam.weatherapp.fragment.LocationWeatherFragment;
-import com.epam.weatherapp.model.LocationInfo;
-
 public class LocationWeatherActivity extends FragmentActivity implements LocationListFragment.OnHeadlineSelectedListener {
     private static final int NUM_PAGES = 5;
     private MenuItem screenListButton;
@@ -34,6 +34,7 @@ public class LocationWeatherActivity extends FragmentActivity implements Locatio
         setUpAdapter();
     }
 
+    //FIXME: use onBackPressed method here
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK && !screenListButton.isVisible()) {
@@ -107,6 +108,8 @@ public class LocationWeatherActivity extends FragmentActivity implements Locatio
             Bundle bunle = new Bundle();
           //draft
             bunle.putSerializable(LocationWeatherFragment.LOCATION_INFO, new LocationInfo("city"+position,"","", mas[position]));
+
+            //FIXME: setArguments method here overlaps setArguments method in create()
             fragment.setArguments(bunle);
             return fragment;
         }

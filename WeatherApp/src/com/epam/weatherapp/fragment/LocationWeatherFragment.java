@@ -3,13 +3,6 @@ package com.epam.weatherapp.fragment;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Toast;
-
 import com.epam.weatherapp.R;
 import com.epam.weatherapp.exception.TechnicalException;
 import com.epam.weatherapp.model.LocationInfo;
@@ -17,7 +10,15 @@ import com.epam.weatherapp.util.dataviewer.DisplayLocationWeatherTask;
 import com.epam.weatherapp.util.uidecoration.IUIDecorator;
 import com.epam.weatherapp.util.uidecoration.WeatherDisplayDecorator;
 
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Toast;
+
 public class LocationWeatherFragment extends Fragment {
+    //FIXME: final static or static final. Use one style
     public final static String LOCATION_INFO = "com.epam.weatherapp.activity.LOCATION_INFO";
     public static final String ARG_PAGE = "page";
     private static final String LOCATION_URL = "http://apidev.accuweather.com/currentconditions/v1/%s.json?language=en&apikey=hAilspiKe";
@@ -79,6 +80,8 @@ public class LocationWeatherFragment extends Fragment {
         if (args != null) {
             return (LocationInfo) args.getSerializable(LOCATION_INFO);
         }
+
+        //FIXME: that's not good to make some checkings in get method. you have to do that some time before
         throw new IllegalStateException("Location info wasn't resived from activity");
     }
 

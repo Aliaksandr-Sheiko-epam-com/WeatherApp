@@ -7,10 +7,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.util.Log;
-
 import com.epam.weatherapp.exception.WeatherParseException;
 import com.epam.weatherapp.model.LocationInfo;
+
+import android.util.Log;
 
 public final class LocationInfoParser {
     private final static String TAG_LOG = LocationInfoParser.class.getName();
@@ -39,6 +39,8 @@ public final class LocationInfoParser {
         }
         return locationList;
     }
+
+    //FIXME: there are a lot of copy pasted try\catch blocks
 
     private static String getKey(JSONObject locationInfo) throws WeatherParseException {
         try {

@@ -13,6 +13,7 @@ import android.widget.ListView;
 
 //remade to another activity
 public final class LocationListFragment extends ListFragment {
+    //FIXME: package friendly field here?
     OnHeadlineSelectedListener mCallback;
 
     public interface OnHeadlineSelectedListener {
@@ -29,6 +30,9 @@ public final class LocationListFragment extends ListFragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
+
+        //FIXME: you'd better firstly check using instanceof or something instead of using try\catch and
+        // than throw illegal exception here
         try {
             mCallback = (OnHeadlineSelectedListener) activity;
         }

@@ -1,0 +1,9 @@
+.idea/
+out/
+*.iml
+WeatherApp/gen/com/epam/weatherapp/Manifest.java
+WeatherApp/build/
+WeatherApp/.gradle
+WeatherApp/build.gradle
+WeatherApp/gen/com/epam/weatherapp/BuildConfig.java
+WeatherApp/gen/com/epam/weatherapp/R.java

@@ -4,10 +4,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.util.Log;
-
 import com.epam.weatherapp.exception.WeatherParseException;
 import com.epam.weatherapp.model.LocationWeather;
+
+import android.util.Log;
 
 public final class LocationWeatherParser {
     private final static String TAG_LOG = LocationWeatherParser.class.getName();
@@ -30,6 +30,8 @@ public final class LocationWeatherParser {
         LocationWeather locationWeather = new LocationWeather(weatherText, weatherIcon, metricTemperature, imperialTemperature);
         return locationWeather;
     }
+
+    //FIXME: there are a lot of copy pasted try\catch blocks
     
     private static int getWeatherIcon(JSONObject weatherJSONObject) throws WeatherParseException {
         try {

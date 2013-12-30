@@ -2,13 +2,6 @@ package com.epam.weatherapp.util.dataviewer;
 
 import java.util.List;
 
-import android.content.Context;
-import android.os.Handler;
-import android.os.Looper;
-import android.util.Log;
-import android.view.View;
-import android.widget.Toast;
-
 import com.epam.weatherapp.exception.ReadWebPageException;
 import com.epam.weatherapp.exception.TechnicalException;
 import com.epam.weatherapp.exception.WeatherParseException;
@@ -17,6 +10,13 @@ import com.epam.weatherapp.util.LocationInfoParser;
 import com.epam.weatherapp.util.pageloader.IPageDownloader;
 import com.epam.weatherapp.util.pageloader.WebPageLoadTask;
 import com.epam.weatherapp.util.uidecoration.IResultViewer;
+
+import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
+import android.view.View;
+import android.widget.Toast;
 
 public final class DisplayAvailableLocationTask extends WebPageLoadTask {
     private final static String TAG_LOG = DisplayAvailableLocationTask.class.getName();
@@ -37,6 +37,7 @@ public final class DisplayAvailableLocationTask extends WebPageLoadTask {
     
     @Override
     protected void onSuccessPostExecute(final String result) {
+        //FIXME: reuse one handler everywhere in this class
         Handler handler = new Handler(Looper.getMainLooper());
         try {
             final List<LocationInfo> locationList = LocationInfoParser.getLocationList(result);
