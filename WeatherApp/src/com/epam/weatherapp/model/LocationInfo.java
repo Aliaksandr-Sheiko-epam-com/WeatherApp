@@ -1,6 +1,9 @@
 package com.epam.weatherapp.model;
 
-public class LocationInfo {
+import java.io.Serializable;
+
+public class LocationInfo implements Serializable{
+    private static final long serialVersionUID = -4985986516927377533L;
     private final String cityName;
     private final String countryName;
     private final String administativeAreaName;
@@ -28,7 +31,7 @@ public class LocationInfo {
     public String getKey() {
         return key;
     }
-    
+
     @Override
     public int hashCode() {
         final int prime = 31;

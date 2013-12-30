@@ -28,6 +28,8 @@ import com.epam.weatherapp.fragment.LocationWeatherFragment;
 import com.epam.weatherapp.model.LocationInfo;
 import com.epam.weatherapp.util.dataviewer.DisplayAvailableLocationTask;
 import com.epam.weatherapp.util.pageloader.WebPageLoadTask;
+import com.epam.weatherapp.util.uidecoration.ChooseLocationDecorator;
+import com.epam.weatherapp.util.uidecoration.IUIDecorator;
 
 public class MainActivity extends Activity {
     private final static String URL_ADDRESS = "http://apidev.accuweather.com/locations/v1/cities/autocomplete?apikey=hAilspiKe&language=en&q=";
@@ -36,6 +38,7 @@ public class MainActivity extends Activity {
     private ArrayAdapter<LocationInfo> adapter;
     private NetworkReceiver receiver;
     private ExecutorService pool;
+    private IUIDecorator uiDecorator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +46,7 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
         autoCompleteTextView = (AutoCompleteTextView) findViewById(R.id.auto_text_location);
         pool = Executors.newFixedThreadPool(1);
+        uiDecorator = new ChooseLocationDecorator();
         tuneLocationView();
         createNetworkReceiver();
     }
@@ -114,7 +118,8 @@ public class MainActivity extends Activity {
 
         private void addDownloadTask(String searchLocation) {
             String uriLocation = Uri.encode(searchLocation);
-            dataLoader = new DisplayAvailableLocationTask(autoCompleteTextView, URL_ADDRESS + uriLocation);
+            dataLoader = new DisplayAvailableLocationTask(autoCompleteTextView, URL_ADDRESS + uriLocation,
+                uiDecorator.createAfterTaskDecorator(autoCompleteTextView));
             pool.execute(dataLoader);
         }
 
@@ -130,13 +135,13 @@ public class MainActivity extends Activity {
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             ArrayAdapter<LocationInfo> myWeatherAdapter = (ArrayAdapter<LocationInfo>) autoCompleteTextView.getAdapter();
             LocationInfo locationInfo = myWeatherAdapter.getItem(position);
-            callWeatherActivity(locationInfo.getKey());
+            callWeatherActivity(locationInfo);
             autoCompleteTextView.setText(locationInfo.getCityName());
         }
-        
-        private void callWeatherActivity(String locationKey) {
+
+        private void callWeatherActivity(LocationInfo locationInfo) {
             Intent intent = new Intent(MainActivity.this, LocationWeatherActivity.class);
-            intent.putExtra(LocationWeatherFragment.COUNTRY_KEY, locationKey);
+            intent.putExtra(LocationWeatherFragment.LOCATION_INFO, locationInfo);
             startActivity(intent);
         }
 

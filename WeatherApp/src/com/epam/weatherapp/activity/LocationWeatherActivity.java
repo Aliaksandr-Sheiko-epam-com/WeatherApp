@@ -2,9 +2,14 @@ package com.epam.weatherapp.activity;
 
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NavUtils;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -13,20 +18,20 @@ import android.view.MenuItem;
 import com.epam.weatherapp.R;
 import com.epam.weatherapp.fragment.LocationListFragment;
 import com.epam.weatherapp.fragment.LocationWeatherFragment;
+import com.epam.weatherapp.model.LocationInfo;
 
 public class LocationWeatherActivity extends FragmentActivity implements LocationListFragment.OnHeadlineSelectedListener {
+    private static final int NUM_PAGES = 5;
     private MenuItem screenListButton;
+    private ViewPager mPager;
+    private PagerAdapter mPagerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_location_weather);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            getActionBar().setDisplayHomeAsUpEnabled(true);
-        }
-        LocationWeatherFragment locationWeather = new LocationWeatherFragment();
-        locationWeather.setArguments(getIntent().getExtras());
-        getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, locationWeather).commit();
+        setContentView(R.layout.activity_screen_slider);
+        createBackButtonMenu();
+        setUpAdapter();
     }
 
     @Override
@@ -62,21 +67,55 @@ public class LocationWeatherActivity extends FragmentActivity implements Locatio
     private void showLocationList() {
         LocationListFragment locationListFragment = new LocationListFragment();
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.fragment_container, locationListFragment);
+        transaction.replace(R.id.pager, locationListFragment);
         transaction.addToBackStack(null);
         transaction.commit();
     }
 
     @Override
     public void onArticleSelected(int position) {
-        // TODO Auto-generated method stub
-
     }
+    
+    private void setUpAdapter() {
+        mPager = (ViewPager) findViewById(R.id.pager);
+        mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
+        mPager.setAdapter(mPagerAdapter);
+        mPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+            @Override
+            public void onPageSelected(int position) { 
+                invalidateOptionsMenu();
+            }
+        });
+    }
+    
+    private void createBackButtonMenu() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            getActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+    }
+    
+    private class ScreenSlidePagerAdapter extends FragmentPagerAdapter  {
+        //draft
+        String[] mas = new String[] { "28580", "28800", "178087", "317676", "328328", "623", "308526"};
+        public ScreenSlidePagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        System.out.println("LocationWeatherActivity---onDestroy");
+        @Override
+        public Fragment getItem(int position) {
+            Fragment fragment = LocationWeatherFragment.create(position);
+            Bundle bunle = new Bundle();
+          //draft
+            bunle.putSerializable(LocationWeatherFragment.LOCATION_INFO, new LocationInfo("city"+position,"","", mas[position]));
+            fragment.setArguments(bunle);
+            return fragment;
+        }
+
+        @Override
+        public int getCount() {
+            return NUM_PAGES;
+        }
+
     }
 
 }
