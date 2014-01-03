@@ -10,7 +10,16 @@
     <string name="title_activity_location_weather">LocationWeatherActivity</string>
     <string name="location_text_hint">Enter Location</string>
     <string name="add_screen">Add screen</string>
-	<string name="weather_screen">Show Weather</string>
-	<string name="metric_temperature">Temperature C: </string>
-	<string name="imperial_temperature">Temperature F: </string>
+    <string name="weather_screen">Show Weather</string>
+    <string name="metric_temperature">Temperature C: </string>
+    <string name="imperial_temperature">Temperature F: </string>
+    <string name="title_activity_location_list">LocationListActivity</string>
+    
+    <string name="action_remove_item">Remove item</string>
+    
+    <string name="action_add_item">Add item</string>
+    <string name="action_show_weather_item">Weather</string>
+    <string name="message_empty_layout_changes">Add an item above to get started.</string>
+
+    
 </resources>

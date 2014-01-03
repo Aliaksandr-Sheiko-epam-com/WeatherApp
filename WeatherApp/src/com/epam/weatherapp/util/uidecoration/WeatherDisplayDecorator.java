@@ -18,7 +18,8 @@ public class WeatherDisplayDecorator implements IUIDecorator {
 
     @Override
     public void showDecoration(View rootView) throws TechnicalException {
-        TextView locationView = (TextView) ViewFinder.findViewByTag(LOCATION_NAME_TAG, rootView);
+        ViewFinder<TextView> viewFinder = new ViewFinder<TextView>(rootView);
+        TextView locationView = viewFinder.findViewByTag(LOCATION_NAME_TAG);
         locationView.setText(locationInfo.getCityName());
     }
 
@@ -39,8 +40,9 @@ public class WeatherDisplayDecorator implements IUIDecorator {
         @Override
         public void view(Object resultData) throws TechnicalException {
             LocationWeather locationWeather = (LocationWeather) resultData;
-            TextView metricTemperature = (TextView) ViewFinder.findViewByTag(METRIC_TEMPERATURE_TAG, rootView);
-            TextView imperialTemperature = (TextView) ViewFinder.findViewByTag(IMPERIAL_TEMPERATURE_TAG,rootView);
+            ViewFinder<TextView> viewFinder = new ViewFinder<TextView>(rootView);
+            TextView metricTemperature = viewFinder.findViewByTag(METRIC_TEMPERATURE_TAG);
+            TextView imperialTemperature = viewFinder.findViewByTag(IMPERIAL_TEMPERATURE_TAG);
             metricTemperature.setText(Double.toString(locationWeather.getMetricTemperature()));
             imperialTemperature.setText(Double.toString(locationWeather.getImperialTemperature()));
         }

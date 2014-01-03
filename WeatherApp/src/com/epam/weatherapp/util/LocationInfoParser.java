@@ -28,59 +28,40 @@ public final class LocationInfoParser {
         JSONObject locationJSONObject;
         String key, cityName, countryName, administativeAreaName;
         LocationInfo location;
-        for (int i = 0; i < jsonArr.length(); i++) {
-            locationJSONObject = JSONParser.getJSONObject(jsonArr, i);
-            key = getKey(locationJSONObject);
-            cityName = getCityName(locationJSONObject);
-            countryName = getCountryName(locationJSONObject);
-            administativeAreaName = getAdministativeAreaName(locationJSONObject);
-            location = new LocationInfo(cityName, countryName, administativeAreaName, key);
-            locationList.add(location);
-        }
-        return locationList;
-    }
-
-    //FIXME: there are a lot of copy pasted try\catch blocks
-
-    private static String getKey(JSONObject locationInfo) throws WeatherParseException {
         try {
-            return locationInfo.getString(CITY_KEY);
+            for (int i = 0; i < jsonArr.length(); i++) {
+                locationJSONObject = JSONParser.getJSONObject(jsonArr, i);
+                key = getKey(locationJSONObject);
+                cityName = getCityName(locationJSONObject);
+                countryName = getCountryName(locationJSONObject);
+                administativeAreaName = getAdministativeAreaName(locationJSONObject);
+                location = new LocationInfo(cityName, countryName, administativeAreaName, key);
+                locationList.add(location);
+            }
+            return locationList;
         }
         catch (JSONException e) {
-            Log.e(TAG_LOG, "Retrieve city key error occured", e);
-            throw new WeatherParseException("Retrieve city key error occured", e);
+            Log.e(TAG_LOG, "Retrieve json value error occured", e);
+            throw new WeatherParseException("Retrieve json value error occured", e);
         }
+
     }
 
-    private static String getCityName(JSONObject locationInfo) throws WeatherParseException {
-        try {
-            return locationInfo.getString(LOCALIZED_NAME_KEY);
-        }
-        catch (JSONException e) {
-            Log.e(TAG_LOG, "Retrieve city name error occured", e);
-            throw new WeatherParseException("Retrieve city name error occured", e);
-        }
+    private static String getKey(JSONObject locationInfo) throws JSONException {
+        return locationInfo.getString(CITY_KEY);
     }
 
-    private static String getCountryName(JSONObject locationInfo) throws WeatherParseException {
-        try {
-            JSONObject country = locationInfo.getJSONObject(COUNTRY_KEY);
-            return country.getString(LOCALIZED_NAME_KEY);
-        }
-        catch (JSONException e) {
-            Log.e(TAG_LOG, "Retrieve country name error occured", e);
-            throw new WeatherParseException("Retrieve country name error occured", e);
-        }
+    private static String getCityName(JSONObject locationInfo) throws JSONException {
+        return locationInfo.getString(LOCALIZED_NAME_KEY);
     }
 
-    private static String getAdministativeAreaName(JSONObject locationInfo) throws WeatherParseException {
-        try {
-            JSONObject administativeArea = locationInfo.getJSONObject(ADMINISTRATIVE_AREA_KEY);
-            return administativeArea.getString(LOCALIZED_NAME_KEY);
-        }
-        catch (JSONException e) {
-            Log.e(TAG_LOG, "Retrieve administative area name error occured", e);
-            throw new WeatherParseException("Retrieve administative area name error occured", e);
-        }
+    private static String getCountryName(JSONObject locationInfo) throws JSONException {
+        JSONObject country = locationInfo.getJSONObject(COUNTRY_KEY);
+        return country.getString(LOCALIZED_NAME_KEY);
+    }
+
+    private static String getAdministativeAreaName(JSONObject locationInfo) throws JSONException {
+        JSONObject administativeArea = locationInfo.getJSONObject(ADMINISTRATIVE_AREA_KEY);
+        return administativeArea.getString(LOCALIZED_NAME_KEY);
     }
 }

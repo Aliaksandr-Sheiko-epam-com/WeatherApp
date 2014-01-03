@@ -19,6 +19,7 @@ public final class DisplayLocationWeatherTask extends WebPageLoadTask {
     private final static String TAG_LOG = DisplayLocationWeatherTask.class.getName();
     private final View rootView;
     private final IResultViewer resultViewer;
+    private Handler handler = new Handler(Looper.getMainLooper());
     
     public DisplayLocationWeatherTask(View rootView, String url, IResultViewer resultViewer) {
         super(url);
@@ -34,7 +35,6 @@ public final class DisplayLocationWeatherTask extends WebPageLoadTask {
 
 	@Override
 	protected void onSuccessPostExecute(String result) {
-	    Handler handler = new Handler(Looper.getMainLooper());
 	    try {
 	        final LocationWeather locationWeather = LocationWeatherParser.getLocationWeather(result);
             handler.post(new Runnable() {
@@ -65,7 +65,6 @@ public final class DisplayLocationWeatherTask extends WebPageLoadTask {
 
 	@Override
 	protected void onFailPostExecute(ReadWebPageException readException) {
-	    Handler handler = new Handler(Looper.getMainLooper());
         handler.post(new Runnable() {
 
             @Override

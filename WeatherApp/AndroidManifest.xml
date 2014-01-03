@@ -17,21 +17,26 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="com.epam.weatherapp.activity.MainActivity"
+            android:name="com.epam.weatherapp.activity.LocationSelectActivity"
             android:label="@string/app_name" >
+            
+        </activity>
+        <activity
+            android:name="com.epam.weatherapp.activity.WeatherListActivity"
+            android:label="@string/title_activity_location_weather"
+            android:parentActivityName="com.epam.weatherapp.activity.LocationSelectActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.epam.weatherapp.activity.LocationSelectActivity" />
+        </activity>
+        <activity
+            android:name="com.epam.weatherapp.activity.LocationListActivity"
+            android:label="@string/title_activity_location_list" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-        <activity
-            android:name="com.epam.weatherapp.activity.LocationWeatherActivity"
-            android:label="@string/title_activity_location_weather"
-            android:parentActivityName="com.epam.weatherapp.activity.MainActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.epam.weatherapp.activity.MainActivity" />
         </activity>
     </application>
 

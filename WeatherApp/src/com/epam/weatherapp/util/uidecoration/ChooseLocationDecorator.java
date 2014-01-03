@@ -36,7 +36,8 @@ public class ChooseLocationDecorator implements IUIDecorator {
         @Override
         public void view(Object resultData) throws TechnicalException {
             List<LocationInfo> locationList = (List<LocationInfo>) resultData;
-            AutoCompleteTextView autoCompleteTextView = (AutoCompleteTextView) ViewFinder.findViewByTag(VIEW_TAG, rootView);
+            ViewFinder<AutoCompleteTextView> viewFinder = new ViewFinder<AutoCompleteTextView>(rootView);
+            AutoCompleteTextView autoCompleteTextView = viewFinder.findViewByTag(VIEW_TAG);
             Context context = autoCompleteTextView.getContext();
             ArrayAdapter<LocationInfo> adapter = new ArrayAdapter<LocationInfo>(context, android.R.layout.simple_list_item_1,
                 locationList);

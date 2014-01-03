@@ -22,6 +22,7 @@ public final class DisplayAvailableLocationTask extends WebPageLoadTask {
     private final static String TAG_LOG = DisplayAvailableLocationTask.class.getName();
     private final IResultViewer resultViewer;
     private final View rootView;
+    private  Handler handler = new Handler(Looper.getMainLooper());
     
     public DisplayAvailableLocationTask(View rootView, String url, IResultViewer resultViewer) {
         super(url);
@@ -37,8 +38,6 @@ public final class DisplayAvailableLocationTask extends WebPageLoadTask {
     
     @Override
     protected void onSuccessPostExecute(final String result) {
-        //FIXME: reuse one handler everywhere in this class
-        Handler handler = new Handler(Looper.getMainLooper());
         try {
             final List<LocationInfo> locationList = LocationInfoParser.getLocationList(result);
             handler.post(new Runnable() {
@@ -69,7 +68,6 @@ public final class DisplayAvailableLocationTask extends WebPageLoadTask {
 
     @Override
     protected void onFailPostExecute(ReadWebPageException readException) {
-        Handler handler = new Handler(Looper.getMainLooper());
         handler.post(new Runnable() {
 
             @Override
