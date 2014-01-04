@@ -19,31 +19,4 @@
         android:textSize="20sp" 
         android:tag="auto_complete_text_view"/>
 
-   <!--  <Spinner
-        android:id="@+id/country_spinner"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" />
-
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="sendLocation"
-        android:text="@string/button_send" />
- -->
-    <!--
-         <ScrollView
-        android:id="@+id/scrollView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:ems="10"
-        android:scrollHorizontally="false" >
-
-        <TextView
-            android:id="@+id/text_result"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text=""
-            android:textSize="20sp" />
-    </ScrollView>  -->
-
 </LinearLayout>

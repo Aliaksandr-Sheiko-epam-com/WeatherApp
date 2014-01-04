@@ -31,6 +31,7 @@ public class WeatherDisplayDecorator implements IUIDecorator {
     private class AfterTaskDecorator implements IResultViewer {
         public static final String METRIC_TEMPERATURE_TAG = "metric_temperature";
         public static final String IMPERIAL_TEMPERATURE_TAG = "imperial_temperature";
+        public static final String WEATHER_DESCRIPTION_TAG = "weather_description";
         private View rootView;
 
         public AfterTaskDecorator(View rootView) {
@@ -43,6 +44,8 @@ public class WeatherDisplayDecorator implements IUIDecorator {
             ViewFinder<TextView> viewFinder = new ViewFinder<TextView>(rootView);
             TextView metricTemperature = viewFinder.findViewByTag(METRIC_TEMPERATURE_TAG);
             TextView imperialTemperature = viewFinder.findViewByTag(IMPERIAL_TEMPERATURE_TAG);
+            TextView weatherDescription = viewFinder.findViewByTag(WEATHER_DESCRIPTION_TAG);
+            weatherDescription.setText(locationWeather.getWeatherText());
             metricTemperature.setText(Double.toString(locationWeather.getMetricTemperature()));
             imperialTemperature.setText(Double.toString(locationWeather.getImperialTemperature()));
         }

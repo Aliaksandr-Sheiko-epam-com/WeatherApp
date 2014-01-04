@@ -15,11 +15,13 @@
     <string name="imperial_temperature">Temperature F: </string>
     <string name="title_activity_location_list">LocationListActivity</string>
     
+    <string name="weather_description">Weather: </string>
+    
     <string name="action_remove_item">Remove item</string>
     
     <string name="action_add_item">Add item</string>
     <string name="action_show_weather_item">Weather</string>
-    <string name="message_empty_layout_changes">Add an item above to get started.</string>
+    <string name="message_empty_layout_changes">Add city above to show their weather.</string>
 
     
 </resources>

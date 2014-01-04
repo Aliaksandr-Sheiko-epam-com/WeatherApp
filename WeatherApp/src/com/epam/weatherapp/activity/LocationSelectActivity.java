@@ -1,8 +1,6 @@
 package com.epam.weatherapp.activity;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -11,7 +9,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -27,7 +25,9 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Toast;
 
 import com.epam.weatherapp.R;
-import com.epam.weatherapp.fragment.LocationWeatherFragment;
+import com.epam.weatherapp.dao.ILocationInfoDAO;
+import com.epam.weatherapp.dao.SqliteLocationInfoDAO;
+import com.epam.weatherapp.database.LocationInfoDbHelper;
 import com.epam.weatherapp.model.LocationInfo;
 import com.epam.weatherapp.util.dataviewer.DisplayAvailableLocationTask;
 import com.epam.weatherapp.util.pageloader.WebPageLoadTask;
@@ -37,19 +37,18 @@ import com.epam.weatherapp.util.uidecoration.IUIDecorator;
 public class LocationSelectActivity extends Activity {
     private final static String URL_ADDRESS = "http://apidev.accuweather.com/locations/v1/cities/autocomplete?apikey=hAilspiKe&language=en&q=";
     private WebPageLoadTask dataLoader;
-    private AutoCompleteTextView autoCompleteTextView;
-    private ArrayAdapter<LocationInfo> adapter;
     private NetworkReceiver receiver;
     private ExecutorService pool;
+    private ILocationInfoDAO locationInfoDAO;
     private IUIDecorator uiDecorator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        autoCompleteTextView = (AutoCompleteTextView) findViewById(R.id.auto_text_location);
+        setContentView(R.layout.activity_location_select);
         pool = Executors.newFixedThreadPool(1);
         uiDecorator = new ChooseLocationDecorator();
+        initLocationInfoDAO();
         tuneLocationView();
         createNetworkReceiver();
     }
@@ -58,10 +57,19 @@ public class LocationSelectActivity extends Activity {
     protected void onDestroy() {
         super.onDestroy();
         this.unregisterReceiver(receiver);
+        locationInfoDAO.close();
+        pool.shutdown();
+    }
+    
+    private void initLocationInfoDAO() {
+        LocationInfoDbHelper locationInfoDbHelper = new LocationInfoDbHelper(getApplicationContext());
+        SQLiteDatabase writeDb = locationInfoDbHelper.getWritableDatabase();
+        locationInfoDAO = new SqliteLocationInfoDAO(writeDb);
     }
 
     private void tuneLocationView() {
-        adapter = new ArrayAdapter<LocationInfo>(this, android.R.layout.simple_list_item_1, new ArrayList<LocationInfo>());
+        ArrayAdapter<LocationInfo> adapter = new ArrayAdapter<LocationInfo>(this, android.R.layout.simple_list_item_1, new ArrayList<LocationInfo>());
+        AutoCompleteTextView autoCompleteTextView = (AutoCompleteTextView) findViewById(R.id.auto_text_location);
         autoCompleteTextView.setAdapter(adapter);
         autoCompleteTextView.addTextChangedListener(new TextChangeWatcher());
         autoCompleteTextView.setOnItemClickListener(new LocationSelectListener());
@@ -84,14 +92,19 @@ public class LocationSelectActivity extends Activity {
         @Override
         public void onReceive(Context context, Intent intent) {
             String message = checkConnection() ? "Internet availible" : "Internet not availible";
-            Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+            showToastMessage(message);
         }
+    }
+    
+    private void showToastMessage(String message) {
+        Toast.makeText(LocationSelectActivity.this, message, Toast.LENGTH_SHORT).show();
     }
 
     private class TextChangeWatcher implements TextWatcher {
 
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
+            AutoCompleteTextView autoCompleteTextView = (AutoCompleteTextView) findViewById(R.id.auto_text_location);
             String searchLocation = autoCompleteTextView.getText().toString();
             // this condition for prevent calling page loader twice when made only one change
             if (before != count && !TextUtils.isEmpty(searchLocation)) {
@@ -121,13 +134,14 @@ public class LocationSelectActivity extends Activity {
 
         private void addDownloadTask(String searchLocation) {
             String uriLocation = Uri.encode(searchLocation);
+            AutoCompleteTextView autoCompleteTextView = (AutoCompleteTextView) findViewById(R.id.auto_text_location);
             dataLoader = new DisplayAvailableLocationTask(autoCompleteTextView, URL_ADDRESS + uriLocation,
                 uiDecorator.createAfterTaskDecorator(autoCompleteTextView));
             pool.execute(dataLoader);
         }
 
         private void inaccessibleNetMessage() {
-            Toast.makeText(LocationSelectActivity.this, "Internet not availible", Toast.LENGTH_SHORT).show();
+            showToastMessage("Internet not availible");
         }
     }
 
@@ -136,42 +150,25 @@ public class LocationSelectActivity extends Activity {
         @SuppressWarnings("unchecked")
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            AutoCompleteTextView autoCompleteTextView = (AutoCompleteTextView) findViewById(R.id.auto_text_location);
             ArrayAdapter<LocationInfo> myWeatherAdapter = (ArrayAdapter<LocationInfo>) autoCompleteTextView.getAdapter();
             LocationInfo locationInfo = myWeatherAdapter.getItem(position);
-            callWeatherActivity(locationInfo);
+            checkIfExistAndCallNextActivity(locationInfo);
             autoCompleteTextView.setText(locationInfo.getCityName());
         }
 
-        private void callWeatherActivity(LocationInfo locationInfo) {
-            Intent intent = new Intent(LocationSelectActivity.this, LocationListActivity.class);
-            //intent.putExtra(LocationWeatherFragment.LOCATION_INFO, locationInfo);
-            writeLocationInfo(locationInfo);
-            startActivity(intent);
-        }
-        
-        private void writeLocationInfo(LocationInfo locationInfo) {
-            SharedPreferences sharedPref = getApplicationContext().getSharedPreferences(LocationListActivity.LOCATION_FILE_NAME, Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedPref.edit();
-            putExtra(sharedPref, editor, locationInfo);
-        }
-        
-        private void putExtra(SharedPreferences sharedPref, SharedPreferences.Editor editor, LocationInfo locationInfo) {
-            Set<String> locationSet = getLocationSet(sharedPref);
-            locationSet.add(createLocationString(locationInfo));
-            editor.putStringSet(LocationListActivity.LOCATION_SET_KEY, locationSet);
-            editor.commit();
-        }
-
-        private Set<String> getLocationSet(SharedPreferences sharedPref) {
-            Set<String> locationSet = sharedPref.getStringSet(LocationListActivity.LOCATION_SET_KEY, null);
-            if(locationSet == null) {
-                locationSet = new LinkedHashSet<String>();
+        private void checkIfExistAndCallNextActivity(LocationInfo locationInfo) {
+            if(!locationInfoDAO.isExistKey(locationInfo)) {
+                locationInfoDAO.save(locationInfo);
+                callWeatherActivity();
+            } else {
+                showToastMessage("This city is already added");
             }
-            return locationSet;
         }
         
-        private String createLocationString(LocationInfo locationInfo) {
-            return locationInfo.getCityName() + "_" + locationInfo.getKey();
+        private void callWeatherActivity() {
+            Intent intent = new Intent(LocationSelectActivity.this, LocationListActivity.class);           
+            startActivity(intent);
         }
     }
 }

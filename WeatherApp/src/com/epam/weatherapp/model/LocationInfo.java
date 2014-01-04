@@ -2,13 +2,15 @@ package com.epam.weatherapp.model;
 
 import java.io.Serializable;
 
-public class LocationInfo implements Serializable{
+public class LocationInfo extends Entity implements Serializable{
     private static final long serialVersionUID = -4985986516927377533L;
-    private final String cityName;
-    private final String countryName;
-    private final String administativeAreaName;
-    private final String key;
+    private String cityName;
+    private String countryName;
+    private String administativeAreaName;
+    private String key;
 
+    public LocationInfo() {}
+    
     public LocationInfo(String cityName, String countryName, String administativeAreaName, String key) {
         this.cityName = cityName;
         this.countryName = countryName;
@@ -32,10 +34,26 @@ public class LocationInfo implements Serializable{
         return key;
     }
 
+    public void setCityName(String cityName) {
+        this.cityName = cityName;
+    }
+
+    public void setCountryName(String countryName) {
+        this.countryName = countryName;
+    }
+
+    public void setAdministativeAreaName(String administativeAreaName) {
+        this.administativeAreaName = administativeAreaName;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
-        int result = 1;
+        int result = super.hashCode();
         result = prime * result + ((administativeAreaName == null) ? 0 : administativeAreaName.hashCode());
         result = prime * result + ((cityName == null) ? 0 : cityName.hashCode());
         result = prime * result + ((countryName == null) ? 0 : countryName.hashCode());
@@ -47,7 +65,7 @@ public class LocationInfo implements Serializable{
     public boolean equals(Object obj) {
         if (this == obj)
             return true;
-        if (obj == null)
+        if (!super.equals(obj))
             return false;
         if (getClass() != obj.getClass())
             return false;
