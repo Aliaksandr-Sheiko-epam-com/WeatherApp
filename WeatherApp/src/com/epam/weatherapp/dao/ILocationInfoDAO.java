@@ -14,6 +14,7 @@ public interface ILocationInfoDAO {
     boolean save(LocationInfo locationInfo);
     
     boolean isExistKey(LocationInfo locationInfo);
-    
+
+    //FIXME: this method relates to the certain implementation. Remove it from the interface.
     void close();
 }

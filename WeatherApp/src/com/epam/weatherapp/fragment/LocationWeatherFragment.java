@@ -3,19 +3,19 @@ package com.epam.weatherapp.fragment;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Toast;
-
 import com.epam.weatherapp.R;
 import com.epam.weatherapp.exception.TechnicalException;
 import com.epam.weatherapp.model.LocationInfo;
 import com.epam.weatherapp.util.dataviewer.DisplayLocationWeatherTask;
 import com.epam.weatherapp.util.uidecoration.IUIDecorator;
 import com.epam.weatherapp.util.uidecoration.WeatherDisplayDecorator;
+
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Toast;
 
 public class LocationWeatherFragment extends Fragment {
     public final static String LOCATION_INFO = "com.epam.weatherapp.activity.LOCATION_INFO";
@@ -92,6 +92,7 @@ public class LocationWeatherFragment extends Fragment {
     }
 
     private View detachFromParent(View view) {
+        //FIXME: do not modify parent from child! think how to go without this
         ViewGroup parent = (ViewGroup) rootView.getParent();
         parent.removeView(rootView);
         return view;

@@ -3,6 +3,12 @@ package com.epam.weatherapp.activity;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.epam.weatherapp.R;
+import com.epam.weatherapp.dao.ILocationInfoDAO;
+import com.epam.weatherapp.dao.SqliteLocationInfoDAO;
+import com.epam.weatherapp.database.LocationInfoDbHelper;
+import com.epam.weatherapp.model.LocationInfo;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
@@ -13,12 +19,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
-import com.epam.weatherapp.R;
-import com.epam.weatherapp.dao.ILocationInfoDAO;
-import com.epam.weatherapp.dao.SqliteLocationInfoDAO;
-import com.epam.weatherapp.database.LocationInfoDbHelper;
-import com.epam.weatherapp.model.LocationInfo;
 
 public class LocationListActivity extends Activity {
     private ILocationInfoDAO locationInfoDAO;
@@ -54,6 +54,8 @@ public class LocationListActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location_list);
         initLocationInfoDAO();
+
+        //FIXME: this definitely must be ListView
         containerView = (ViewGroup) findViewById(R.id.container);   
     }
 
@@ -71,6 +73,10 @@ public class LocationListActivity extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
+        //FIXME: Imagine the following case:
+        // start LocationListActivity (open DB), start LocationSelectActivity (open DB), press back -- destroy LocationSelectActivity (close DB).
+        // We are in LocationListActivity but the db was closed in LocationSelectActivity.
         locationInfoDAO.close();
     }
     
@@ -82,6 +88,7 @@ public class LocationListActivity extends Activity {
         boolean epmty = locationInfoList.isEmpty(); 
         weatherMenuItem.setEnabled(!epmty);
         if(epmty) {
+            //FIXME: use setEmptyView method of ListView
             findViewById(android.R.id.empty).setVisibility(View.VISIBLE);
         } 
     }
@@ -94,6 +101,8 @@ public class LocationListActivity extends Activity {
     
     private void callAddLocationActivity() {
         Intent intent = new Intent(LocationListActivity.this, LocationSelectActivity.class);
+        //FIXME: should use startActivityForResult here!! Currently you can have multiple LocationListActivity in one history stack
+        // Take a look here: http://developer.android.com/guide/components/tasks-and-back-stack.html
         startActivity(intent);
     }
 
@@ -106,11 +115,13 @@ public class LocationListActivity extends Activity {
 
     private void hideEmptyMessage() {
         if (containerView.getChildCount() != 0) {
+            //FIXME: use setEmptyView method of ListView
             findViewById(android.R.id.empty).setVisibility(View.GONE);
         }
     }
 
     private void initLocationInfoDAO() {
+        //FIXME: copypasted from LocationSelectActivity. Think how to combine
         LocationInfoDbHelper locationInfoDbHelper = new LocationInfoDbHelper(getApplicationContext());
         SQLiteDatabase writeDb = locationInfoDbHelper.getWritableDatabase();
         locationInfoDAO = new SqliteLocationInfoDAO(writeDb);

@@ -3,12 +3,12 @@ package com.epam.weatherapp.dao;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.epam.weatherapp.database.FeedReaderContract.LocationInfoEntry;
+import com.epam.weatherapp.model.LocationInfo;
+
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-
-import com.epam.weatherapp.database.FeedReaderContract.LocationInfoEntry;
-import com.epam.weatherapp.model.LocationInfo;
 
 public class SqliteLocationInfoDAO extends SqliteAbstarctDAO {
     private final static String EQUAL_WHERE_CONDITION = " = ?";
@@ -45,6 +45,8 @@ public class SqliteLocationInfoDAO extends SqliteAbstarctDAO {
         String selection = LocationInfoEntry._ID + EQUAL_WHERE_CONDITION;
         String[] selectionArgs = {String.valueOf(locationInfo.getId())};
         int countDeleted = database.delete(LocationInfoEntry.TABLE_NAME, selection, selectionArgs);
+
+        //FIXME: simplify
         return countDeleted > 0 ? true : false;
     }
 
@@ -56,6 +58,8 @@ public class SqliteLocationInfoDAO extends SqliteAbstarctDAO {
         values.put(LocationInfoEntry.COLUMN_NAME_COUNTRY_NAME, locationInfo.getCountryName());
         values.put(LocationInfoEntry.COLUMN_NAME_KEY, locationInfo.getKey());
         long newRowId = database.insert(LocationInfoEntry.TABLE_NAME, null, values);
+
+        //FIXME: simplify
         return newRowId > 0 ? true : false;
     }
 
@@ -73,6 +77,8 @@ public class SqliteLocationInfoDAO extends SqliteAbstarctDAO {
         finally {
             closeCursor(cursor);
         }
+
+        //FIXME: simplify
         return changedRowCount > 0 ? true : false;
     }
 

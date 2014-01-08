@@ -2,6 +2,10 @@ package com.epam.weatherapp.activity;
 
 import java.util.List;
 
+import com.epam.weatherapp.R;
+import com.epam.weatherapp.fragment.LocationWeatherFragment;
+import com.epam.weatherapp.model.LocationInfo;
+
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -13,10 +17,6 @@ import android.support.v4.app.NavUtils;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.MenuItem;
-
-import com.epam.weatherapp.R;
-import com.epam.weatherapp.fragment.LocationWeatherFragment;
-import com.epam.weatherapp.model.LocationInfo;
 
 public class WeatherListActivity extends FragmentActivity {
     public final static String LOCATION_INFO_LIST = "location_info_list";
@@ -80,6 +80,7 @@ public class WeatherListActivity extends FragmentActivity {
 
         @Override
         public Fragment getItem(int position) {
+            //FIXME: why you don't want to pass location info to the create method
             Fragment fragment = LocationWeatherFragment.create(position);
             Bundle bundle = fragment.getArguments();
             bundle.putSerializable(LocationWeatherFragment.LOCATION_INFO, locationInfoList.get(position));

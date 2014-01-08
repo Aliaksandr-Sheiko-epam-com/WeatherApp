@@ -4,6 +4,16 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.epam.weatherapp.R;
+import com.epam.weatherapp.dao.ILocationInfoDAO;
+import com.epam.weatherapp.dao.SqliteLocationInfoDAO;
+import com.epam.weatherapp.database.LocationInfoDbHelper;
+import com.epam.weatherapp.model.LocationInfo;
+import com.epam.weatherapp.util.dataviewer.DisplayAvailableLocationTask;
+import com.epam.weatherapp.util.pageloader.WebPageLoadTask;
+import com.epam.weatherapp.util.uidecoration.ChooseLocationDecorator;
+import com.epam.weatherapp.util.uidecoration.IUIDecorator;
+
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -23,16 +33,6 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Toast;
-
-import com.epam.weatherapp.R;
-import com.epam.weatherapp.dao.ILocationInfoDAO;
-import com.epam.weatherapp.dao.SqliteLocationInfoDAO;
-import com.epam.weatherapp.database.LocationInfoDbHelper;
-import com.epam.weatherapp.model.LocationInfo;
-import com.epam.weatherapp.util.dataviewer.DisplayAvailableLocationTask;
-import com.epam.weatherapp.util.pageloader.WebPageLoadTask;
-import com.epam.weatherapp.util.uidecoration.ChooseLocationDecorator;
-import com.epam.weatherapp.util.uidecoration.IUIDecorator;
 
 public class LocationSelectActivity extends Activity {
     private final static String URL_ADDRESS = "http://apidev.accuweather.com/locations/v1/cities/autocomplete?apikey=hAilspiKe&language=en&q=";
@@ -58,6 +58,8 @@ public class LocationSelectActivity extends Activity {
         super.onDestroy();
         this.unregisterReceiver(receiver);
         locationInfoDAO.close();
+
+        // FIXME: in this case the method does nothing. Whether remove it or use another one.
         pool.shutdown();
     }
     
